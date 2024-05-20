@@ -139,7 +139,7 @@ const Home = () => {
         )}
       </div>
       {videoId && (
-        <div className="w-full backdrop-blur-md mx-auto mb-5">
+        <div className="w-full shadow-lg backdrop-blur-md mx-auto mb-5">
           <h2 className="text-2xl backdrop-blur-md drop-shadow-xl
 
  font-semibold mb-2">{videoTitle}</h2>
