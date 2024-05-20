@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
+import YouTube, { YouTubeProps, YouTubePlayer } from 'react-youtube';
+import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 
-// Dynamic import for ReactQuill
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
+const API_KEY = 'AIzaSyASPCUKt5OLCAgW4NkYPhcj121VK1b9ScE'; // Replace with your YouTube Data API key
 
 const Home = () => {
   const [videoId, setVideoId] = useState('M7lc1UVf-VE');
   const [notes, setNotes] = useState<any[]>([]);
   const [currentNote, setCurrentNote] = useState('');
   const [editNoteId, setEditNoteId] = useState<number | null>(null);
-  const [player, setPlayer] = useState<any>(null);
+  const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
 
   useEffect(() => {
     if (videoId) {
@@ -23,10 +27,22 @@ const Home = () => {
       } else {
         setNotes([]);
       }
+
+      // Fetch video details
+      axios
+        .get(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${API_KEY}`)
+        .then(response => {
+          const videoDetails = response.data.items[0].snippet;
+          setVideoTitle(videoDetails.title);
+          setVideoDescription(videoDetails.description);
+        })
+        .catch(error => {
+          console.error('Error fetching video details:', error);
+        });
     }
   }, [videoId]);
 
-  const onReady = (event: YouTubeEvent) => {
+  const onReady = (event: YouTubePlayer) => {
     setPlayer(event.target);
   };
 
@@ -122,10 +138,15 @@ const Home = () => {
           </div>
         )}
       </div>
-      <div className="w-full border-b-2 mx-auto mb-5">
-        <h2 className="text-2xl font-semibold mb-2">Video title goes here</h2>
-        <p className="text-gray-600">This is the description of the video</p>
-      </div>
+      {videoId && (
+        <div className="w-full backdrop-blur-md mx-auto mb-5">
+          <h2 className="text-2xl backdrop-blur-md drop-shadow-xl
+
+ font-semibold mb-2">{videoTitle}</h2>
+          <p className="text-[10px] drop-shadow-xl 
+ text-gray-600">{videoDescription}</p>
+        </div>
+      )}
       <div className="w-full mx-auto mb-5 p-4 border rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <div className='mx-auto border-b-2 w-full'>
