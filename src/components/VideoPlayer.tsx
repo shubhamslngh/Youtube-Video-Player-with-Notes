@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import YouTube from 'react-youtube';
+import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
 import 'react-quill/dist/quill.snow.css';
 
+// Dynamic import for ReactQuill
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const Home = () => {
   const [videoId, setVideoId] = useState('M7lc1UVf-VE');
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<any[]>([]);
   const [currentNote, setCurrentNote] = useState('');
-  const [editNoteId, setEditNoteId] = useState(null);
-  const [player, setPlayer] = useState(null);
-  const [image, setImage] = useState(null);
+  const [editNoteId, setEditNoteId] = useState<number | null>(null);
+  const [player, setPlayer] = useState<any>(null);
+  const [image, setImage] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const Home = () => {
     }
   }, [videoId]);
 
-  const onReady = (event) => {
+  const onReady = (event: YouTubeEvent) => {
     setPlayer(event.target);
   };
 
@@ -66,26 +67,26 @@ const Home = () => {
     }
   };
 
-  const deleteNote = (id) => {
+  const deleteNote = (id: number) => {
     const updatedNotes = notes.filter(note => note.id !== id);
     setNotes(updatedNotes);
     localStorage.setItem(`notes-${videoId}`, JSON.stringify(updatedNotes));
   };
 
-  const editNote = (note) => {
+  const editNote = (note: any) => {
     setCurrentNote(note.note);
     setEditNoteId(note.id);
     setImage(note.image);
     setShowEditor(true);
   };
 
-  const jumpToTime = (time) => {
+  const jumpToTime = (time: number) => {
     if (player) {
       player.seekTo(time);
     }
   };
 
-  const handleVideoUrlChange = (event) => {
+  const handleVideoUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const url = event.target.value;
     const videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (videoIdMatch) {
@@ -95,12 +96,12 @@ const Home = () => {
     }
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
+        setImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -122,7 +123,7 @@ const Home = () => {
         )}
       </div>
       <div className="w-full border-b-2 mx-auto mb-5">
-        <h2 className="text-xl font-semibold mb-2">Video title goes here</h2>
+        <h2 className="text-2xl font-semibold mb-2">Video title goes here</h2>
         <p className="text-gray-600">This is the description of the video</p>
       </div>
       <div className="w-full mx-auto mb-5 p-4 border rounded-lg shadow-sm">
@@ -131,8 +132,8 @@ const Home = () => {
             <h2 className="text-sm font-bold">My notes</h2>
             <p className="text-sm text-gray-600">All your notes at a single place. Click on any note to go to specific timestamp in the video.</p>
           </div>
-          <button onClick={() => setShowEditor(true)} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-            ⨁ Add new note
+          <button onClick={() => setShowEditor(true)} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow text-xs">
+            + Add new note
           </button>
         </div>
         {showEditor && (
@@ -151,11 +152,11 @@ const Home = () => {
             />
             {image && <img src={image} alt="Uploaded" className="mb-3 max-w-full h-auto" />}
             {editNoteId ? (
-              <button onClick={updateNote} className="px-4 py-2 mb-5 bg-blue-500 text-white rounded hover:bg-blue-600">
+              <button onClick={updateNote} className="px-3 py-1 mb-5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
                 Update Note
               </button>
             ) : (
-              <button onClick={saveNote} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+              <button onClick={saveNote} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow text-xs">
                 Save Note
               </button>
             )}
@@ -164,18 +165,18 @@ const Home = () => {
         {notes.map((note) => (
           <div key={note.id} className="mb-4 p-4 border rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-500">{note.date}</span>
-              <span onClick={() => jumpToTime(note.time)} className="text-blue-500 cursor-pointer">
+              <span className="text-gray-500 text-xs">{note.date}</span>
+              <span onClick={() => jumpToTime(note.time)} className="text-blue-500 cursor-pointer text-xs">
                 Timestamp: {new Date(note.time * 1000).toISOString().substr(14, 5)} min
               </span>
             </div>
             <div dangerouslySetInnerHTML={{ __html: note.note }}></div>
             {note.image && <img src={note.image} alt="Note" className="mt-2 max-w-xs h-auto" />}
             <div className="flex justify-end mr-2 mt-2">
-              <button onClick={() => deleteNote(note.id)} className="bg-white text-sm hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+              <button onClick={() => deleteNote(note.id)} className="bg-white text-sm hover:bg-gray-100 text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow text-xs">
                 Delete note
               </button>
-              <button onClick={() => editNote(note)} className="bg-white text-sm hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+              <button onClick={() => editNote(note)} className="bg-white text-sm hover:bg-gray-100 text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow text-xs">
                 Edit note
               </button>
             </div>
