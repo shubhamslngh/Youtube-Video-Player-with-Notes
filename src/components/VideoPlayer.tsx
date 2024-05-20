@@ -5,8 +5,7 @@ import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-
-const API_KEY = 'AIzaSyASPCUKt5OLCAgW4NkYPhcj121VK1b9ScE'; // Replace with your YouTube Data API key
+  const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
 const Home = () => {
   const [videoId, setVideoId] = useState('M7lc1UVf-VE');
