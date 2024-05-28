@@ -1,10 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import fetch from 'node-fetch';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { videoId } = req.query;
 
-  if (!videoId) {
-    return res.status(400).json({ error: 'Video ID is required' });
+  if (!videoId || typeof videoId !== 'string') {
+    return res.status(400).json({ error: 'Video ID is required and must be a string' });
   }
 
   const apiKey = process.env.YOUTUBE_API_KEY;
@@ -17,8 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      return res.status(response.status).json({ error: `YouTube API request failed with status ${response.status}` });
     }
+
     const data = await response.json();
 
     if (data.items && data.items.length > 0) {
@@ -28,6 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ error: 'Video not found' });
     }
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch video title' });
+    return res.status(500).json({ error: `Failed to fetch video title: ${error.message}` });
   }
 }

@@ -141,9 +141,9 @@ const Home = () => {
         <div className="w-full shadow-lg backdrop-blur-md mx-auto mb-5">
           <h2 className="text-2xl backdrop-blur-md drop-shadow-xl
 
- font-semibold mb-2">{videoTitle}</h2>
+ font-semibold mb-2">Title: {videoTitle} </h2>
           <p className="text-[10px] drop-shadow-sm 
- text-gray-600">{videoDescription}</p>
+ text-gray-600">Description:{videoDescription}</p>
         </div>
       )}
      <div className="w-full mx-auto mb-5 p-4 border rounded-lg shadow-sm">
