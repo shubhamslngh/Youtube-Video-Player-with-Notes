@@ -1,6 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fetch from 'node-fetch';
 
+interface YouTubeApiResponse {
+  items: {
+    snippet: {
+      title: string;
+    };
+  }[];
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { videoId } = req.query;
 
@@ -21,7 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(response.status).json({ error: `YouTube API request failed with status ${response.status}` });
     }
 
-    const data = await response.json();
+    const data = await response.json() as YouTubeApiResponse;
+
 
     if (data.items && data.items.length > 0) {
       const videoTitle = data.items[0].snippet.title;
@@ -30,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ error: 'Video not found' });
     }
   } catch (error) {
-    return res.status(500).json({ error: `Failed to fetch video title: ${error.message}` });
-  }
+  return res.status(500).json({ error: `Failed to fetch video title: ${(error as Error).message}` });
+}
+
 }
