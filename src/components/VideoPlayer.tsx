@@ -142,20 +142,24 @@ const Home = () => {
           <h2 className="text-2xl backdrop-blur-md drop-shadow-xl
 
  font-semibold mb-2">{videoTitle}</h2>
-          <p className="text-[10px] drop-shadow-xl 
+          <p className="text-[10px] drop-shadow-sm 
  text-gray-600">{videoDescription}</p>
         </div>
       )}
-      <div className="w-full mx-auto mb-5 p-4 border rounded-lg shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <div className='mx-auto border-b-2 w-full'>
-            <h2 className="text-sm font-bold">My notes</h2>
-            <p className="text-sm text-gray-600">All your notes at a single place. Click on any note to go to specific timestamp in the video.</p>
-          </div>
-          <button onClick={() => setShowEditor(true)} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow text-xs">
-            + Add new note
-          </button>
-        </div>
+     <div className="w-full mx-auto mb-5 p-4 border rounded-lg shadow-sm">
+  <div className="flex w-full justify-between items-center mb-4">
+    <div className=' grid space-x-4 mx-auto p-4 border-b-2 w-full'>
+      <h2 className=" text-sm font-bold">My notes</h2>
+      <p className=" text-sm text-gray-600">All your notes at a single place. Click on any note to go to a specific timestamp in the video.</p>
+    </div>
+    <button
+      onClick={() => setShowEditor(true)}
+      className="flex-none bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-5 border border-gray-400 rounded shadow text-xs"
+    >
+      <span className='mr-1'>⨁</span> Add new note
+    </button>
+  </div>
+
         {showEditor && (
           <div className="w-full mx-auto">
             <ReactQuill
@@ -184,7 +188,7 @@ const Home = () => {
         )}
         {notes.map((note) => (
           <div key={note.id} className="mb-4 p-4 border rounded-lg shadow-sm">
-            <div className="flex justify-between items-center mb-2">
+            <div className="grid justify-between items-center mb-2">
               <span className="text-gray-500 text-xs">{note.date}</span>
               <span onClick={() => jumpToTime(note.time)} className="text-blue-500 cursor-pointer text-xs">
                 Timestamp: {new Date(note.time * 1000).toISOString().substr(14, 5)} min
